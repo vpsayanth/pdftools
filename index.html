@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8">
+      <title>Merge PDFs</title>
+      <style>
+         /* Add some styling for the page */
+         .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+         }
+         h1 {
+            margin-top: 50px;
+         }
+         #file-input {
+            margin-top: 50px;
+            padding: 10px;
+         }
+         #submit-button {
+            margin-top: 50px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+         }
+         .file-list {
+            margin-top: 50px;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="container">
+         <h1>Merge PDFs</h1>
+         <input type="file" id="file-input" multiple>
+         <br>
+         <button id="submit-button">Submit</button>
+         <br>
+         <ul class="file-list"></ul>
+      </div>
+      <script>
+         // Add event listener for file input
+         const fileInput = document.getElementById("file-input");
+         fileInput.addEventListener("change", function() {
+            const files = this.files;
+            const fileList = document.querySelector(".file-list");
+            
+            // Clear previous list items
+            fileList.innerHTML = "";
+            
+            // Loop through each file and add it to the list
+            for (let i = 0; i < files.length; i++) {
+               const file = files[i];
+               const listItem = document.createElement("li");
+               listItem.innerHTML = file.name;
+               fileList.appendChild(listItem);
+            }
+         });
+         
+         // Add event listener for submit button
+         const submitButton = document.getElementById("submit-button");
+         submitButton.addEventListener("click", function() {
+            const files = fileInput.files;
+            
+            // Check if there are any files selected
+            if (files.length === 0) {
+               alert("Please select at least one PDF file.");
+               return;
+            }
+            
+            // Create a FormData object to send to the server
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+               formData.append("pdfs", files[i]);
+            }
+            
+            // Send a POST request to the server to merge the PDFs
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/merge-pdfs", true);
+            xhr.responseType = "blob";
+            xhr.onload = function() {
+               if (this.status === 200) {
+                  const blob = new Blob([this.response], { type: "application/pdf" });
+                  const link = document.createElement("a");
+                  link.href = URL.
+createObjectURL(blob);
+link.download = "merged.pdf";
+link.style.display = "none";
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+} else {
+alert("Failed to merge PDFs. Please try again later.");
+}
+};
+xhr.send(formData);
+});
+</script>
+
+   </body>
+</html>
